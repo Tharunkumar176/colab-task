@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { GetProjectById } from "../../apicalls/projects";
-import { GetAllTasks } from "../../apicalls/tasks";
 import Divider from "../../components/Divider";
 import { SetLoading } from "../../redux/loadersSlice";
 import { getDateFormat } from "../../utils/helpers";
@@ -17,7 +16,7 @@ function ProjectInfo() {
     const [project, setProject] = useState(null);
     const dispatch = useDispatch();
     const params = useParams();
-    const getData = async () => {
+    const getData = React.useCallback(async () => {
         try {
             dispatch(SetLoading(true));
             const response = await GetProjectById(params.id);
@@ -27,7 +26,9 @@ function ProjectInfo() {
                 const currentUser = response.data.members.find(
                     (member) => member.user._id === user._id
                 );
-                setCurrentUserRole(currentUser.role);
+                if (currentUser) {
+                    setCurrentUserRole(currentUser.role);
+                }
             } else {
                 throw new Error(response.message);
             }
@@ -35,14 +36,14 @@ function ProjectInfo() {
             dispatch(SetLoading(false));
             message.error(error.message);
         }
-    };
+    }, [dispatch, params.id, user._id]);
 
 
 
     useEffect(() => {
         getData();
 
-    }, []);
+    }, [getData]);
 
     return (
         project && (

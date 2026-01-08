@@ -1,4 +1,4 @@
-import { Button, message, Table } from "antd";
+import { Button, message, Modal, Table } from "antd";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RemoveMemberFromProject } from "../../../apicalls/projects";
@@ -13,23 +13,32 @@ function Members({ project, reloadData }) {
     const dispatch = useDispatch();
     const isOwner = project.owner._id === user._id;
     const deleteMember = async (memberId) => {
-        try {
-            dispatch(SetLoading(true));
-            const response = await RemoveMemberFromProject({
-                projectId: project._id,
-                memberId,
-            });
-            if (response.success) {
-                reloadData();
-                message.success(response.message);
-            } else {
-                throw new Error(response.message);
-            }
-            dispatch(SetLoading(false));
-        } catch (error) {
-            dispatch(SetLoading(false));
-            message.error(error.message);
-        }
+        Modal.confirm({
+            title: "Are you sure you want to remove this member?",
+            content: "This action cannot be undone. The member will lose access to this project.",
+            okText: "Yes, Remove",
+            okType: "danger",
+            cancelText: "Cancel",
+            onOk: async () => {
+                try {
+                    dispatch(SetLoading(true));
+                    const response = await RemoveMemberFromProject({
+                        projectId: project._id,
+                        memberId,
+                    });
+                    if (response.success) {
+                        reloadData();
+                        message.success(response.message);
+                    } else {
+                        throw new Error(response.message);
+                    }
+                    dispatch(SetLoading(false));
+                } catch (error) {
+                    dispatch(SetLoading(false));
+                    message.error(error.message);
+                }
+            },
+        });
     };
 
     const columns = [

@@ -24,7 +24,7 @@ router.post("/add-notification", authMiddleware, async (req, res) => {
 router.get("/get-all-notifications", authMiddleware, async (req, res) => {
     try {
         const notifications = await Notification.find({
-            user: req.body.userId,
+            user: req.userId,
         }).sort({ createdAt: -1 });
         res.send({
             success: true,
@@ -43,7 +43,7 @@ router.post("/mark-as-read", authMiddleware, async (req, res) => {
     try {
         await Notification.updateMany(
             {
-                user: req.body.userId,
+                user: req.userId,
                 read: false,
             },
             {
@@ -51,7 +51,7 @@ router.post("/mark-as-read", authMiddleware, async (req, res) => {
             }
         );
         const notifications = await Notification.find({
-            user: req.body.userId,
+            user: req.userId,
         }).sort({ createdAt: -1 });
         res.send({
             success: true,
@@ -70,7 +70,7 @@ router.post("/mark-as-read", authMiddleware, async (req, res) => {
 router.delete("/delete-all-notifications", authMiddleware, async (req, res) => {
     try {
         await Notification.deleteMany({
-            user: req.body.userId,
+            user: req.userId,
         });
         res.send({
             success: true,
