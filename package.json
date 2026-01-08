@@ -22,7 +22,7 @@
     "dev": "NODE_OPTIONS=\"--openssl-legacy-provider\" nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Tharunkumar176",
   "license": "ISC",
-  "description": ""
+  "description": "Collaborative task management application"
 }
